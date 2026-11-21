@@ -8,44 +8,51 @@
 #' @export
 ag_clean_datasus <- function(dados) {
   message("[ag-clean]: Iniciando higienização das variáveis...")
-  
-  dados_limpos <- dados %>%
+
+  # Decodificação vetorizada de idade (suporta SIM processado, SIH processado e SIM bruto)
+  idade_calc <- if ("IDADEanos" %in% names(dados)) {
+    as.numeric(dados$IDADEanos)
+  } else if ("IDADE" %in% names(dados) && is.numeric(dados$IDADE)) {
+    dados$IDADE
+  } else if ("IDADE" %in% names(dados)) {
+    x_pad <- stringr::str_pad(as.character(dados$IDADE), width = 3, side = "left", pad = "0")
+    unidade <- substr(x_pad, 1, 1)
+    valor <- suppressWarnings(as.numeric(substr(x_pad, 2, 3)))
+    dplyr::case_when(
+      unidade %in% c("0", "1", "2", "3") ~ 0,
+      unidade == "4" ~ valor,
+      unidade == "5" ~ 100 + valor,
+      TRUE ~ NA_real_
+    )
+  } else {
+    rep(NA_real_, nrow(dados))
+  }
+
+  dados_limpos <- dados |>
     # 1. Padronização de CIDs (Remove pontos, espaços e converte para maiúsculas)
     dplyr::mutate(
-      across(contains("CAUSABAS") | contains("DIAG_PRINC"), 
-             ~ str_replace_all(str_to_upper(as.character(.)), "[^A-Z0-9]", ""),
-             .names = "{.col}_clean")
-    ) %>%
-    
-    # 2. Higienização de CBOs (Ocupações - Mantém apenas dígitos)
+      dplyr::across(
+        dplyr::contains("CAUSABAS") | dplyr::contains("DIAG_PRINC"),
+        ~ stringr::str_replace_all(stringr::str_to_upper(as.character(.x)), "[^A-Z0-9]", ""),
+        .names = "{.col}_clean"
+      )
+    ) |>
+
+    # 2. Higienização de CBOs (Preserva texto se já decodificado ou limpa dígitos se bruto)
     dplyr::mutate(
-      across(contains("OCUP") | contains("CBOR"),
-             ~ {
-               x <- str_replace_all(as.character(.), "[^0-9]", "")
-               if_else(x == "" | x == "000000", NA_character_, x)
-             },
-             .names = "{.col}_clean")
-    ) %>%
-    
-    # 3. Decodificação de Idade do SIM (Unidade no 1º dígito: 4 = Anos, 5 = Centenários)
+      dplyr::across(
+        dplyr::contains("OCUP") | dplyr::contains("CBOR"),
+        ~ {
+          val <- stringr::str_squish(stringr::str_to_upper(as.character(.x)))
+          dplyr::if_else(val %in% c("", "000000", "NA", "IGNORADO"), NA_character_, val)
+        },
+        .names = "{.col}_clean"
+      )
+    ) |>
+
+    # 3. Idade em anos e Faixas Etárias Epidemiológicas
     dplyr::mutate(
-      idade_anos = if ("IDADE" %in% names(.)) {
-        sapply(as.character(IDADE), function(x) {
-          x_pad <- str_pad(x, width = 3, side = "left", pad = "0")
-          unidade <- substr(x_pad, 1, 1)
-          valor <- suppressWarnings(as.numeric(substr(x_pad, 2, 3)))
-          case_when(
-            unidade %in% c("0", "1", "2", "3") ~ 0,
-            unidade == "4" ~ valor,
-            unidade == "5" ~ 100 + valor,
-            TRUE ~ NA_real_
-          )
-        })
-      } else { NA_real_ }
-    ) %>%
-    
-    # 4. Agrupamento por Faixas Etárias Padrão Epidemiológicas
-    dplyr::mutate(
+      idade_anos = idade_calc,
       faixa_etaria = cut(
         idade_anos,
         breaks = c(0, 20, 40, 60, 80, Inf),
@@ -53,15 +60,7 @@ ag_clean_datasus <- function(dados) {
         labels = c("0-19", "20-39", "40-59", "60-79", "80+")
       )
     )
-  
+
   message("[ag-clean]: Limpeza concluída com sucesso!")
   return(dados_limpos)
 }
-
-# Teste de execução rápida no Console
-#library(dplyr)
-#library(stringr)
-
-# Chamada da função do agente
-#dados_tratados <- ag_clean_datasus(dados_raw)
-#head(dados_tratados)

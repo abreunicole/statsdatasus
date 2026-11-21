@@ -11,8 +11,12 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 Imports: 
     dplyr,
+    ellmer,
+    httr2,
     knitr,
     lubridate,
-    microdatasus,
     rmarkdown,
-    stringr
+    stringr,
+    utils
+Depends: 
+    microdatasus

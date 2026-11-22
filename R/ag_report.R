@@ -41,7 +41,7 @@ ag_report_generate <- function(uf, tabela_resumo, parecer_llm, output_dir = "res
     parecer_formatado,
     "",
     "---",
-    "_Relatório gerado automaticamente pelo pacote Ragkit._"
+    "_Relatório gerado automaticamente pelo pacote statsdatasus._"
   )
   
   # Escreve o arquivo Rmd em disco

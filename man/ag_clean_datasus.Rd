@@ -2,16 +2,21 @@
 % Please edit documentation in R/ag_clean_datasus.R
 \name{ag_clean_datasus}
 \alias{ag_clean_datasus}
-\title{Agente de Limpeza e Higienização (DataCleaner)}
+\title{Agente de Limpeza e Higienização Universal (DataCleaner)}
 \usage{
-ag_clean_datasus(dados)
+ag_clean_datasus(dados, cid_pattern = NULL, cbo_prefix = NULL)
 }
 \arguments{
 \item{dados}{Dataframe contendo os dados brutos ou processados do DATASUS}
+
+\item{cid_pattern}{Expressão regular (RegEx) opcional para marcar o desfecho (ex: \code{"^B3[5-9]|^B4[0-9]|^B59"}). Padrão NULL.}
+
+\item{cbo_prefix}{Prefixo numérico opcional da CBO para marcar exposição ocupacional (ex: "^6" para agropecuária). Padrão NULL.}
 }
 \value{
 Dataframe higienizado e pronto para modelagem estatística
 }
 \description{
-Limpa e padroniza CIDs, CBOs, datas e idades provenientes do DATASUS (SIM/SIH).
+Limpa e padroniza CIDs, CBOs, datas e idades provenientes do DATASUS (SIM/SIH),
+permitindo opcionalmente marcar um grupo de CIDs ou grande grupo da CBO de interesse.
 }

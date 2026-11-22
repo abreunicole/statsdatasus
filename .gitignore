@@ -1,2 +1,16 @@
-.Rproj.user
-resultados
+# --- SEGURANÇA E CHAVES DE API ---
+.Renviron
+.Rhistory
+.RData
+*.env
+
+# --- BANCOS DE DADOS E ARQUIVOS PESADOS ---
+*.csv
+*.dbc
+*.parquet
+resultados/
+dados_brutos/
+
+# --- CONFIGURAÇÕES LOCAIS DA IDE ---
+.Rproj.user/
+.vscdb/

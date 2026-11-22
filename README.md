@@ -12,16 +12,16 @@
 
 ## 📋 Visão Geral
 
-O **`statsdatasus`** é um pacote R desenvolvido para padronizar e acelerar pipelines de pesquisa observacional e vigilância epidemiológica com dados secundários do Sistema Único de Saúde (SUS)[cite: 1, 2]. 
+O **`statsdatasus`** é um pacote R desenvolvido para padronizar e acelerar pipelines de pesquisa observacional e vigilância epidemiológica com dados secundários do Sistema Único de Saúde (SUS).
 
 Projetado sob uma arquitetura de **agentes modulares desacoplados**, o núcleo do pacote fornece ferramentas universais de engenharia de dados (compatíveis com qualquer agravo da CID-10 e qualquer grande grupo ocupacional da CBO), permitindo que regras clínicas e recortes geográficos específicos fiquem isolados nos scripts de cada pesquisa.
 
 ### ✨ Principais Funcionalidades
 
 - **Extração Resiliente (`ag_fetch_datasus`):** Conexão automatizada aos servidores do DATASUS via [`microdatasus`](https://github.com/rfsaldanha/microdatasus), com suporte integrado ao Sistema de Informações sobre Mortalidade (`SIM-DO`) e Sistema de Informações Hospitalares (`SIH-RD`) e tolerância estendida de *timeout*.
-- **Higienização Universal (`ag_clean_datasus`):** Padronização vetorizada de códigos CID-10 (`CAUSABAS`, `DIAG_PRINC`), higienização de ocupações (`OCUP`, `CBOR`), extração dinâmica do ano do evento, decodificação nativa da estrutura de idades do SIM/SIH (incluindo registros `< 1 ano` e centenários) e marcadores opcionais via expressões regulares (`cid_pattern`, `cbo_prefix`)[cite: 1, 2].
+- **Higienização Universal (`ag_clean_datasus`):** Padronização vetorizada de códigos CID-10 (`CAUSABAS`, `DIAG_PRINC`), higienização de ocupações (`OCUP`, `CBOR`), extração dinâmica do ano do evento, decodificação nativa da estrutura de idades do SIM/SIH (incluindo registros `< 1 ano` e centenários) e marcadores opcionais via expressões regulares (`cid_pattern`, `cbo_prefix`).
 - **Síntese Estatística Offline (`ag_stats_interpret`):** Geração automatizada de pareceres descritivos a partir de tabelas de contingência e distribuições de frequência, sem dependência de APIs externas.
-- **Relatórios Reprodutíveis (`ag_report_generate`):** Compilação dinâmica de documentos R Markdown (`.Rmd`) em relatórios visuais `.html` autocontidos[cite: 2].
+- **Relatórios Reprodutíveis (`ag_report_generate`):** Compilação dinâmica de documentos R Markdown (`.Rmd`) em relatórios visuais `.html` autocontidos.
 
 ---
 
